@@ -15,7 +15,6 @@ type APIPackage struct {
 func getSummonerStats(name string) APIPackage {
 
 	//first get the summoners basic information. we will need his ID to get information on the champions he plays
-	apikey := "***REMOVED***"
 	url := fmt.Sprintf("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/%v?api_key=%v", name, apikey)
 	var summoner riotModels.Summoner
 	err := get(url, &summoner)

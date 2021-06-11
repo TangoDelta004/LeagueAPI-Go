@@ -49,7 +49,7 @@ type MatchStatsPackage struct {
 	gpm20count     float64
 }
 
-func getMatchStats(accountid string, apikey string, name string) MatchStatsPackage {
+func getMatchStats(accountid string, apikey string, name string) (MatchStatsPackage, ErrorPackage) {
 
 	var matchStatsPackage MatchStatsPackage
 
@@ -57,7 +57,7 @@ func getMatchStats(accountid string, apikey string, name string) MatchStatsPacka
 	var matches riotModels.Matches
 	err := get(url, &matches)
 	if err != nil {
-		panic(err)
+		return MatchStatsPackage{}, ErrorPackage{ErrorCode: "300", ErrorMessage: "Could not Find that summoner by id given"}
 	}
 	//normally we would loop through ALL matches. but my limited API key prevents this
 	for i := 0; i < 3; i++ {
@@ -66,7 +66,7 @@ func getMatchStats(accountid string, apikey string, name string) MatchStatsPacka
 		var matchInfo riotModels.MatchInfo
 		err = get(url, &matchInfo)
 		if err != nil {
-			panic(err)
+			return MatchStatsPackage{}, ErrorPackage{ErrorCode: "400", ErrorMessage: "Internal Error"}
 		}
 		// get list of all players identities so we can find the player we are looking for and get his ID
 		participantIdentities := matchInfo.ParticipantIdentities
@@ -141,5 +141,5 @@ func getMatchStats(accountid string, apikey string, name string) MatchStatsPacka
 	matchStatsPackage.Dragonkills = math.Round(matchStatsPackage.Dragonkills / 3)
 	matchStatsPackage.Baronkills = math.Round(matchStatsPackage.Baronkills / 3)
 	matchStatsPackage.Riftkills = math.Round(matchStatsPackage.Riftkills / 3)
-	return matchStatsPackage
+	return matchStatsPackage, ErrorPackage{}
 }

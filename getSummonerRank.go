@@ -12,14 +12,13 @@ type SummonerRankPackage struct {
 	Ratio float64
 }
 
-func getSummonerRank(summonerid string, apikey string) SummonerRankPackage {
+func getSummonerRank(summonerid string, apikey string) (SummonerRankPackage, ErrorPackage) {
 	url := fmt.Sprintf("https://na1.api.riotgames.com/lol/league/v4/entries/by-summoner/%v?api_key=%v", summonerid, apikey)
 	var summonerRanks riotModels.SummonerRanks
 	err := get(url, &summonerRanks)
 	if err != nil {
-		panic(err)
+		return SummonerRankPackage{}, ErrorPackage{ErrorCode: "300", ErrorMessage: "Could not Find that summoner by id given"}
 	}
-
 	var rank string
 	var tier string
 	var ratio float64
@@ -32,5 +31,5 @@ func getSummonerRank(summonerid string, apikey string) SummonerRankPackage {
 		}
 	}
 	summonerRankPackage := SummonerRankPackage{Rank: rank, Tier: tier, Ratio: ratio}
-	return summonerRankPackage
+	return summonerRankPackage, ErrorPackage{}
 }

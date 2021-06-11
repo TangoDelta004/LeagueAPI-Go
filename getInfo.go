@@ -32,7 +32,10 @@ func getInfo(w http.ResponseWriter, r *http.Request) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			summonerinfo := getSummonerStats(summoner)
+			summonerinfo, errorPackage := getSummonerStats(summoner)
+			if errorPackage.ErrorCode != "200" {
+				json.NewEncoder(w).Encode(errorPackage)
+			}
 			channel <- summonerResults{name: summoner, results: summonerinfo}
 		}()
 	}

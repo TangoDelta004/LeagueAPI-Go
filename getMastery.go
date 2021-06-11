@@ -13,12 +13,12 @@ type MasteryPackage struct {
 	Bestchampion      string
 }
 
-func getMastery(summonerid string, apikey string) MasteryPackage {
+func getMastery(summonerid string, apikey string) (MasteryPackage, ErrorPackage) {
 	url := fmt.Sprintf("https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/%s?api_key=%s", summonerid, apikey)
 	var championmastery riotModels.ChampionMastery
 	err := get(url, &championmastery)
 	if err != nil {
-		panic(err)
+		return MasteryPackage{}, ErrorPackage{ErrorCode: "300", ErrorMessage: "Could not Find that summoner by id given"}
 	}
 	totalchampmastery := 0
 	for _, champion := range championmastery {
@@ -32,7 +32,7 @@ func getMastery(summonerid string, apikey string) MasteryPackage {
 	var ddragon riotModels.Ddragon
 	err = get(url, &ddragon)
 	if err != nil {
-		panic(err)
+		return MasteryPackage{}, ErrorPackage{ErrorCode: "400", ErrorMessage: "API is down"}
 	}
 
 	var masteryPackage MasteryPackage
@@ -44,5 +44,5 @@ func getMastery(summonerid string, apikey string) MasteryPackage {
 	}
 
 	masteryPackage = MasteryPackage{Totalchampmastery: totalchampmastery, Bestchampid: bestchampid, Bestchampmastery: bestchampmastery}
-	return masteryPackage
+	return masteryPackage, ErrorPackage{}
 }
